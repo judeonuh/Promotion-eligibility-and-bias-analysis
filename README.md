@@ -22,22 +22,22 @@ Fairness audits performed for Gender, Marital status, and State of Origin show n
 
 However, EDA shows skewed counts by Division, State, Gender, Qualifications, and Recruitment Channel (agency vs referred), which may create perceptions of bias. Absolute counts can be misleading — selection rates matter.  
 
-Conclusion: Based on the available metrics, there is no strong statistical evidence of systematic bias against Gender, Marital status, or State of origin under standard tests — but important signs of disparate outcomes across divisions, locations and recruitment channels warrant procedural fixes, better data, and continued monitoring.
+In conclusion, based on the available metrics, there is no strong statistical evidence of systematic bias against Gender, Marital Status, or State of Origin under standard tests — but important signs of disparate outcomes across divisions, locations and recruitment channels warrant procedural fixes, better data, and continued monitoring.
 
 ---
 
 ## Table of contents  
-[Problem statement]()  
-[Aim and Objectives]()  
-Data & preprocessing  
-Highlighted results from EDA    
-Modeling and evaluation  
-Feature importance  
-Fairness audit and interpretation  
-Business interpretation  
-Limitations and caveats  
-Recommendations (operational and technical) — immediate & medium-term  
-Appendix: Key numbers & how they were computed  
+[Problem statement](#problem-statement)  
+[Aim and Objectives](#aim-and-objectives)  
+[Data and preprocessing](#data-and-preprocessing)  
+[Highlighted results from EDA](#highlighted-results-from-eda)    
+[Modeling and evaluation](#modeling-and-evaluation)  
+[Feature importance](#feature-importance)  
+[Fairness audit and interpretation](#fairness-audit-and-interpretation)  
+[Business interpretation](#business-interpretation)  
+[Limitations and caveats](#limitations-and-caveats)  
+[Recommendations](#recommendations)  
+[Conclusion](#conclusion) 
 
 ---
 
@@ -57,13 +57,15 @@ We address this by:
 
 ---
 
-## Data & preprocessing (summary)
-Dataset size: 38,312 staff records (35,071 not promoted; 3,241 promoted).
-Target: Promotion (0/1).
-
-Typical features used: Division, State_Of_Origin, State (working location), Gender, Marital_status, Qualification (levels), Training_score_average, Trainings_Attended, Targets_met, Last_performance_score, Previous_Award, Staff_Category (Agency, Referred...), discipline flags, intra-department moves, schooling origin (foreign/local), etc.
-
-Preprocessing notes (what was done): encoding categorical variables; scaling where needed; handling class imbalance (models evaluated with and without class reweighting / sampling — results reported are from tuned models that account for imbalance to differing extents). Missingness and feature engineering were handled (imputations, derived binary flags) — see Limitations for details.
+## Data and preprocessing
+* Dataset shape (38312, 19)
+* Target: 'Promoted_or_Not'
+* Out of 38,312 staff records, 35,071 were not promoted,  while  3,241 were promoted.
+* 1,679 null values from the Qualifications column was replaced with the mode of that column.
+* No duplicates found
+* All values were standardized
+* No outliers were detected
+* Categorical variables encoded using Target or OneHotEncoder
 
 ---
 
@@ -254,113 +256,35 @@ Publish the promotion criteria and the score components.
 
 ---
 
-9. Recommendations
-A — Immediate (policy + operational)
+## Recommendations
+* Publish a clear promotion framework that states the primary objective criteria and relative weighting (example: Training score 35%, Targets met 30%, Last performance 20%, Previous awards 10%, Qualifications 5%). Transparency reduces perception of bias.
+* Use rate-based reporting (not just counts) in internal communications: Report selection rates by protected group (gender, marital status, state of origin), division-normalized promotion rates, and promotion rates per 100 staff to illustrate fairness.
+* Establish an "Appeals" & "Audit" process: Any denied candidate can request a review - an independent panel (cross-division) reviews borderline cases.
+* Two-stage selection pipeline is recommended:
+      - Stage 1 (recall-oriented): Use a higher-recall model (e.g., SVC/RF ensemble) or rule-based screener to assemble a longlist of promotable staff.
+      - Stage 2 (precision + human review): Apply a high-precision model (Gradient Boosting) to create a shortlist, then have a calibrated human panel review. This balances finding promotable candidates and avoiding false promotions.
+* Normalize for division/role availability: When promotion slots are limited by division/structure, report promotions as rate per eligible population, and (where possible) create cross-division mobility programs.
+* Improve and standardize performance measurement (training scores, appraisal rubrics).
+* Quantitative KPI for promotions: Establish a promotion-dashboard for leadership with key metrics, trends, and outlier alerts.
+* Collect richer demographic & contextual data (only as legally permitted) to enable broader fairness audits (age, disability, ethnicity). Ensure data privacy and legal compliance.
+* Create development pipelines: Make trainings and assignments available across divisions to reduce structural inequity. Track who gets development opportunities.  
 
-Publish a clear promotion framework that states the primary objective criteria and relative weighting (example: Training score 35%, Targets met 30%, Last performance 20%, Previous awards 10%, Qualifications 5%). Transparency reduces perception of bias.
+For a more technical audience...
+* Adopt the consensus feature set for any promotion scoring tool: i.e. training_score_average, targets_met, previous_award, last_performance_score, qualification_level. Use division only as an adjustment or tie-breaker (and never as a replacement for merit).
+* Bias mitigation: If future audits show disparities, apply reweighting or post-processing fairness techniques (e.g. equalized odds post-processing) rather than naive removal of features.
+* Model monitoring and periodic audits: Track selection rates, TPR, precision, recall, and fairness metrics monthly or quarterly. Keep model versioning and a log of decisions.
+* Human-in-the-loop: Never fully automate promotions. Use models to recommend and prioritize, not to decide. All final promotions should be reviewed by a calibrated, diverse panel.
+* Calibration & thresholding: For score-based decisions, calibrate model output to reflect actual probabilities of promotion and set thresholds transparently. Consider different thresholds per division if promotion dynamics differ, but document the business logic clearly.
 
-Use rate-based reporting (not just counts) in internal communications: report selection rates by protected group (gender, marital status), division-normalized promotion rates, and promotion rates per 100 staff to illustrate fairness.
+---
 
-Establish an appeals & audit process: any denied candidate can request a review; an independent panel (cross-division) reviews borderline cases.
+## Conclusion
+Final verdict — Was the promotion process biased?  
 
-Two-stage selection pipeline (recommended):
+Short answer: No clear statistical evidence of bias was found for Gender, Marital status, or State of Origin when audited under standard selection-rate based tests (Adverse Impact Ratio > 0.8).  
 
-Stage 1 (recall-oriented): Use a higher-recall model (e.g., SVC/RF ensemble) or rule-based screener to assemble a longlist of promotable staff.
+However, there are meaningful disparities in promotion counts and rates across Division, State of Origin, Recruitment Channel, and Qualification, which are legitimate matters for investigation. These disparities can drive perceptions of unfairness even if protected-group AIRs are within accepted thresholds.  
 
-Stage 2 (precision + human review): Apply a high-precision model (Gradient Boosting) to create a shortlist, then have a calibrated human panel review. This balances finding promotable candidates and avoiding false promotions.
+Historical processes and measurement quality can hide biases. The model inherits historical managerial decisions — if those were biased in subtle ways, the model can reproduce them unless corrected.  
 
-Normalize for division/role availability: When promotion slots are limited by division/structure, report promotions as rate per eligible population and (where possible) create cross-division mobility programs.
-
-B — Technical / model governance
-
-Adopt the consensus feature set for any promotion scoring tool: training_score_average, targets_met, previous_award, last_performance_score, qualification_level. Use division only as an adjustment or tie-breaker (and never as a replacement for merit).
-
-Feature vetting: Remove or cautiously treat features that may act as proxies for protected status (e.g., state_of_origin, staff_category) unless there is a clear, justifiable job-related reason. If used, document the rationale.
-
-Bias mitigation: If future audits show disparities, apply reweighting or post-processing fairness techniques (e.g. equalized odds post-processing) rather than naive removal of features.
-
-Model monitoring and periodic audits: Track selection rates, TPR, precision, recall, and fairness metrics monthly or quarterly. Keep model versioning and a log of decisions.
-
-Human-in-the-loop: Never fully automate promotions. Use models to recommend and prioritize, not to decide. All final promotions should be reviewed by a calibrated, diverse panel.
-
-Calibration & thresholding: For score-based decisions, calibrate model output to reflect actual probabilities of promotion and set thresholds transparently. Consider different thresholds per division if promotion dynamics differ, but document the business logic clearly.
-
-C — Data & HR practices (medium term)
-
-Improve and standardize performance measurement (training scores, appraisal rubrics). Rater training reduces score bias and increases model reliability.
-
-Collect richer demographic & contextual data (only as legally permitted) to enable broader fairness audits (age, disability, ethnicity). Ensure data privacy and legal compliance.
-
-Create development pipelines: Make training and stretch assignments available across divisions to reduce structural inequity. Track who gets development opportunities.
-
-Quantitative KPI for promotions: Establish a promotion-dashboard for leadership with key metrics, trends, and outlier alerts.
-
-10. Appendix — Key numbers & how they inform decisions
-Class balance
-
-Not promoted: 35,071 (91.54%)
-
-Promoted: 3,241 (8.46%)
-Implication: Use sampling, class weights, and evaluation metrics that reflect imbalance (precision-recall, F1, AUPRC).
-
-Top correlated features (quick list)
-
-Targets_met (0.2245)
-
-Previous_Award (0.2014)
-
-Training_score_average (0.1784)
-
-Last_performance_score (0.1197)
-
-Implication: These are actionable — invest in accurate measurement and development aligned to them.
-
-Regression coefficients (signed importance)
-
-Training_score_average: +15.26 (very strong)
-
-Division_Commercial Sales and Marketing: +3.93
-
-Division_People/HR: +3.42
-
-Targets_met: +2.61
-
-Negative for some divisions: Research and Innovation, Information & Strategy, IT — suggests fewer promotion opportunities or lower odds.
-
-Implication: Use division adjustments carefully; differences may be structural.
-
-SHAP (tree-model) top features
-
-training_score_average, Targets_met, Division_Commercial Sales and Marketing, Last_performance_score.
-
-Implication: Robust confirmation of the same core features from multiple methods.
-
-Model trade-offs
-
-Gradient Boosting: precision 0.94 / recall 0.34 / accuracy 0.94
-
-SVC: recall 0.84 / precision 0.22 / accuracy 0.73
-
-RandomForest: recall 0.84 / precision 0.20 / accuracy 0.70
-
-Implication: Two-stage screening recommended.
-
-Fairness metrics (Gender)
-
-Female selection_rate = 0.9850; Male = 0.9159; AIR ≈ 0.9299
-
-No adverse impact under 4/5ths rule; females have higher relative selection rate.
-
-Fairness metrics (Marital status)
-
-AIR ≈ 0.9923 → near parity.
-
-Final verdict — Was the promotion process biased?
-
-Short answer: No clear statistical evidence of bias was found for Gender or Marital status when audited under standard selection-rate based tests (Adverse Impact Ratio > 0.8). However:
-
-There are meaningful disparities in promotion counts and rates across Division, State (location), Staff category, and qualification, which are legitimate matters for investigation. These disparities can drive perceptions of unfairness even if protected-group AIRs are within accepted thresholds.
-
-Historical processes and measurement quality can hide biases. The model inherits historical managerial decisions — if those were biased in subtle ways, the model can reproduce them unless corrected.
-
-Conclusion: The evidence does not support a claim of outright, systemic gender or marital-status discrimination in promotions based on the metrics audited — but the company should act to remove ambiguity, increase transparency, normalize division differences, improve measurement, and continue fairness monitoring. That combination will reduce both real unfairness and the perception of unfairness.
+Finally, the evidence does not support a claim of outright, systemic (gender, marital status, or state of origin) discrimination in promotions based on the metrics audited, but the company should act to remove ambiguity, increase transparency, normalize division differences, improve measurement, and continue fairness monitoring. That combination will reduce both real unfairness and the perception of unfairness.
