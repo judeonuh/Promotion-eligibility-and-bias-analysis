@@ -34,8 +34,8 @@ Highlighted results from EDA
 Modeling and evaluation  
 Feature importance  
 Fairness audit and interpretation  
-Business interpretation: what answers the business question?  
-Limitations & caveats  
+Business interpretation  
+Limitations and caveats  
 Recommendations (operational and technical) — immediate & medium-term  
 Appendix: Key numbers & how they were computed  
 
@@ -72,7 +72,8 @@ Preprocessing notes (what was done): encoding categorical variables; scaling whe
 ### 1. Distribution of Promotions
 * Not Promoted: 35,071 (91.54%)
 * Promoted: 3,241 (8.46%)
-> Imbalance ratio: ~ 10.8 : 1
+> [!NOTE]
+> **Imbalance ratio: ~ 10.8 : 1**
 
 ### 2. Promotions by Division
 * Commercial Sales and Marketing: 864 promotions (highest)
@@ -93,7 +94,8 @@ Preprocessing notes (what was done): encoding categorical variables; scaling whe
 * Promoted staff with no past disciplinary action: 99.5%
 * Promoted staff with no previous intra-department movement: 91.4%  
 
-> **Comment on EDA**: Absolute counts are heavily influenced by base rates (e.g., more males in workforce → more promoted males). These counts raise questions and justify further rate-based and statistical tests — which I further performed.
+> [!IMPORTANT]
+> **Absolute counts are heavily influenced by base rates (e.g., more males in workforce → more promoted males). These counts raise questions and justify further rate-based and statistical tests — which I further performed.**
 
 ---
 
@@ -220,38 +222,37 @@ Very near parity — no adverse impact detected for marital status.
 > [!CAUTION]
 > Fairness is multi-dimensional. A pass on AIR does not mean the promotion process is perfectly fair — it means there is no statistical evidence (on audited attributes/content) of adverse impact by those attributes given available features and modeling choices.
 
-7. Business interpretation — how each result answers the business question
-Business question: “Is the promotion process biased? What should determine promotion?”
+---
 
-Answer distilled:
+## Business interpretation
+This section explains how my results answer the business question “Is the promotion process biased? What should determine promotion?”  
 
-Key merit signals strongly associated with promotion are training performance, targets met, prior awards, and recent performance scores. These are good candidates to form an objective promotion-scoring engine because they map to observable performance and skill measures.
-
+* Key merit signals strongly associated with promotion are training performance, targets met, prior awards, and recent performance scores. These are good candidates to form an objective promotion-scoring engine because they map to observable performance and skill measures.
+```
 Business implication: Build a promotion eligibility score that weights these merit-based metrics heavily and transparently.
+```
+* Division and location have material influence on promotions. This may reflect real differences in promotion opportunities (some divisions have more roles, faster turnover, or clearer promotion pipelines), or it may reflect inconsistent application of criteria.
+```
+Business implication: If promotions should be equally accessible across divisions, then division-adjusted thresholds, quotas,
+or normalized scoring may be needed.
+```
+* Gender and marital status fairness audits do not indicate an adverse impact under standard metrics; BUT absolute counts and perceptions (e.g., more promoted males in counts) fuel complaints. Perception matters.
+```
+Business implication: Communicate rates and normalized metrics (not just counts).
+Publish the promotion criteria and the score components.
+```
+* Model performance trade-offs: If the manager choose a model like Gradient Boosting, they minimize false promotions (high precision) but miss candidates (low recall). If the manager's goal is to find every promotable candidate (high recall), they need a different approach or an intermediate two-stage process (screen broadly then apply higher-precision review).
 
-Division and location have material influence on promotions. This may reflect real differences in promotion opportunities (some divisions have more roles, faster turnover, or clearer promotion pipelines), or it may reflect inconsistent application of criteria.
+---
 
-Business implication: If promotions should be equally accessible across divisions, then division-adjusted thresholds, quotas, or normalized scoring may be needed.
+## Limitations and caveats
+* Class imbalance is extreme (≈ 10.8:1). This affects model training and evaluation. Metrics must be interpreted with imbalance in mind.
+* Causality vs correlation: The models identify associations, not causal effects. For example, being in Commercial Sales may correlate with promotion because that division has more roles or different appraisal processes — not because the division itself "deserves" promotion.
+* Missing protected attributes: I could only audit fairness for attributes present in the data. If race/ethnicity, disability, religion, or other protected traits are relevant but not in the dataset, hidden bias may exist undetected.
+* Measurement quality: Training_score_average and Last_performance_score quality depends on consistent, objective scoring across divisions and raters. If scores are noisy or biased, the model will propagate that bias.
+* Label issues: The “promotion” label reflects historical managerial decisions — if the historical process was biased, a model trained on that label can reproduce bias unless explicitly corrected.
 
-Gender and marital status fairness audits do not indicate an adverse impact under standard metrics; BUT absolute counts and perceptions (e.g., more promoted males in counts) fuel complaints. Perception matters.
-
-Business implication: Communicate rates and normalized metrics (not just counts); publish the promotion criteria and the score components.
-
-Model performance trade-offs: If you choose a model like Gradient Boosting you minimize false promotions (high precision) but miss candidates (low recall). If your goal is to find every promotable candidate (high recall), you need a different approach or an intermediate two-stage process (screen broadly then apply higher-precision review).
-
-8. Limitations & caveats
-
-Class imbalance is extreme (≈ 10.8:1). This affects model training and evaluation. Metrics must be interpreted with imbalance in mind.
-
-Causality vs correlation: The models identify associations, not causal effects. For example, being in Commercial Sales may correlate with promotion because that division has more roles or different appraisal processes — not because the division itself "deserves" promotion.
-
-Missing protected attributes: We could only audit fairness for attributes present in the data. If race/ethnicity, age, disability, religion, or other protected traits are relevant but not in the dataset, hidden bias may exist undetected.
-
-Measurement quality: Training_score_average and Last_performance_score quality depends on consistent, objective scoring across divisions and raters. If scores are noisy or biased, the model will propagate that bias.
-
-Label issues: The “promotion” label reflects historical managerial decisions — if the historical process was biased, a model trained on that label can reproduce bias unless explicitly corrected.
-
-Data leakage / proxies: Features like Division or State could be proxies for protected traits. Features should be carefully considered before being used as hard decision inputs.
+---
 
 9. Recommendations
 A — Immediate (policy + operational)
