@@ -29,6 +29,7 @@ In conclusion, based on the available metrics, there is no strong statistical ev
 ## Table of contents  
 [Problem statement](#problem-statement)  
 [Aim and Objectives](#aim-and-objectives)  
+[Skills Demonstrated](#skills-demonstrated)  
 [Data and preprocessing](#data-and-preprocessing)  
 [Highlighted results from EDA](#highlighted-results-from-eda)    
 [Modeling and evaluation](#modeling-and-evaluation)  
@@ -54,6 +55,18 @@ We address this by:
 * Supervised models to identify predictive features and produce explainability (coefficients + SHAP).
 * Fairness audit on protected attributes available (Gender, Marital Status, and State of Origin).
 * Operational recommendations for policy, transparency, and monitoring.
+
+---
+
+## Skills Demonstrated
+* Python
+* Pandas
+* Seaborn
+* XGBoost
+* SHAP
+* Fairness auditing
+* Scikit-learn
+* Imbalanced classification
 
 ---
 
