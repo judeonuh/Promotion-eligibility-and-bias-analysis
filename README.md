@@ -90,7 +90,7 @@ We address this by:
 > [!NOTE]
 > **Imbalance ratio: ~ 10.8 : 1**
 
-![target distribution](target_distr.png)
+![target distribution](/img/target_distr.png)
 
 ### 2. Promotions by Division
 * Commercial Sales and Marketing: 864 promotions (highest)
@@ -100,7 +100,7 @@ We address this by:
 * Lagos: 534 promotions (highest)
 * Jigawa: 18 promotions (lowest)  
 
-![Promotion by division](prm_by_div_sor.png)  
+![Promotion by division](/img/prm_by_div_sor.png)  
 
 ### 4. Promotions by Qualification / Gender / Staff type (distribution among promoted)
 * Qualification: First Degree holders make up 67.2% of promotions (highest); non-university degree holders 16% (least).
@@ -127,7 +127,7 @@ Main models evaluated:
 * Decision Tree
 * KNN (SMOTE)  
 
-![model comparison](model_comp.png)
+![model comparison](/img/model_comp.png)
 
 **Best precision/accuracy:** Gradient Boosting — Precision: 0.94, Accuracy: 0.94, Recall: 0.34.  
 **Interpretation:** Very low false positive rate; but misses many actual promotions (low recall).  
@@ -180,7 +180,7 @@ Division_Research and Innovation             -4.862115
 * Training_score_average has by far the largest positive coefficient in the regression — suggesting it is the most powerful numeric predictor.
 * Division affiliation strongly affects odds in both directions.
 
-![lr feature coeff](lr_feat_coeff.png)  
+![lr feature coeff](/img/lr_feat_coeff.png)  
 
 ### 3. From SHAP (XGBoost tree-based, richer explanation)  
 Top features by average SHAP magnitude:
@@ -192,7 +192,7 @@ Last_performance_score
 ```
 **Interpretation:** SHAP confirms the same major drivers: training score, targets met, division, and last performance are the features with highest contribution to model predictions.  
 
-![shap coeff](shap_value_coeff.png)
+![shap coeff](/img/shap_value_coeff.png)
 
 Therefore, the primary features to recommend for promotion eligibility scoring (ordered):
 * Training_score_average — most consistent, largest effect.
@@ -223,7 +223,7 @@ The AIR of ~0.93 is above the conservative 0.80 (4/5ths) threshold used in many 
 
 Females actually appear to have a higher selection rate than males in the model's selection results — this explains perception vs reality: absolute counts may show more promoted males because there are more males employed, but rates show higher female selection probability.  
 
-![selection rate by gender](sel_rate_gender.png)  
+![selection rate by gender](/img/sel_rate_gender.png)  
 
 ### 2. Marital status fairness
 ```
@@ -237,7 +237,7 @@ AIR: 0.9923
 **Interpretation:**  
 Very near parity — no adverse impact detected for marital status.  
 
-![selection rate by marital status](sel_rate_ms.png)  
+![selection rate by marital status](/img/sel_rate_ms.png)  
 
 ### 3. State of Origin fairness
 ```
@@ -249,7 +249,7 @@ Adverse Impact Ratio (AIR): 0.9229947068403908
 **Interpretation:**  
 Very near parity — no adverse impact detected for State of Origin.  
 
-![selection rate by marital status](sel_rate_sor.png)
+![selection rate by marital status](/img/sel_rate_sor.png)
 
 > [!CAUTION]
 > Fairness is multi-dimensional. A pass on AIR does not mean the promotion process is perfectly fair — it means there is no statistical evidence (on audited attributes/content) of adverse impact by those attributes given available features and modeling choices.
