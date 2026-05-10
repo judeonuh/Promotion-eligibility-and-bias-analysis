@@ -74,9 +74,9 @@ We address this by:
 * Dataset shape (38312, 19)
 * Target: 'Promoted_or_Not'
 * Out of 38,312 staff records, 35,071 were not promoted,  while  3,241 were promoted.
-* 1,679 null values from the Qualifications column was replaced with the mode of that column.
+* 1,679 null values from the Qualifications column were replaced with the mode of that column.
 * No duplicates found
-* All values were standardized
+* All values were standardised
 * No outliers were detected
 * Categorical variables encoded using Target or OneHotEncoder
 
@@ -114,11 +114,11 @@ We address this by:
 * Promoted staff with no previous intra-department movement: 91.4%  
 
 > [!IMPORTANT]
-> **Absolute counts are heavily influenced by base rates (e.g., more males in workforce → more promoted males). These counts raise questions and justify further rate-based and statistical tests — which I further performed.**
+> **Absolute counts are heavily influenced by base rates (e.g., more males in the workforce → more promoted males). These counts raise questions and justify further rate-based and statistical tests, which I further performed.**
 
 ---
 
-## Modeling and evaluation
+## Modelling and evaluation
 Main models evaluated: 
 * Logistic Regression
 * Gradient Boosting
@@ -130,18 +130,18 @@ Main models evaluated:
 ![model comparison](/img/model_comp.png)
 
 **Best precision/accuracy:** Gradient Boosting — Precision: 0.94, Accuracy: 0.94, Recall: 0.34.  
-**Interpretation:** Very low false positive rate; but misses many actual promotions (low recall).  
+**Interpretation:** Very low false positive rate, but misses many actual promotions (low recall).  
 **Best recall:** 
 * SVC — Recall: 0.84, Precision: 0.22, Accuracy: 0.73.
 * Random Forest — Recall: 0.84, Precision: 0.20, Accuracy: 0.70.  
-**Interpretation:** Good at finding promotable staff but many false positives.  
+**Interpretation:** Good at finding promotable staff, but many false positives.  
 
 Choice depends on business objective: Do we prefer a conservative rule (few false promotions — higher precision) or inclusive identification (find most promotable staff — higher recall)? I recommend a hybrid two-stage approach. See [Recommendations](#recommendations).
 
 ---
 
 ## Feature importance
-### 1. From correlation with promotion  
+### 1. From the correlation with promotion  
 Top positive correlations:
 ```
 Targets_met                                  0.224518
@@ -190,7 +190,7 @@ Targets_met
 Division_Commercial Sales and Marketing
 Last_performance_score
 ```
-**Interpretation:** SHAP confirms the same major drivers: training score, targets met, division, and last performance are the features with highest contribution to model predictions.  
+**Interpretation:** SHAP confirms the same major drivers: training score, targets met, division, and last performance are the features with the highest contribution to model predictions.  
 
 ![shap coeff](/img/shap_value_coeff.png)
 
@@ -200,11 +200,11 @@ Therefore, the primary features to recommend for promotion eligibility scoring (
 * Previous_Award / Recognition — signal of prior merit.
 * Last_performance_score — direct performance appraisal.
 * Division (not a merit metric but a strong predictor):
-    - Commercial Sales & Marketing and People/HR positively associated
-    - Some divisions (IT, Strategy, Research) negatively associated.
+    - Commercial Sales & Marketing and People/HR are positively associated
+    - Some divisions (IT, Strategy, Research) are negatively associated.
 * Postgraduate Qualification (MSc/MBA/PhD) — modest positive effect.
 * State of Origin — small signal but visible in EDA (with Lagos having the highest promotions).
-* Recruitment Channel — with large differences in counts, should be normalised/corrected if policy shouldn’t favor one group.  
+* Recruitment Channel — with large differences in counts, should be normalised/corrected if the policy doesn’t favour one group.  
 
 ---
 
@@ -243,7 +243,7 @@ Very near parity — no adverse impact detected for marital status.
 ```
 Overall selection rate: 0.93644
 Overall TPR: 0.97685
-Selection rate ratio (min / max): 0.9229947068403908
+Selection rate ratio (min/max): 0.9229947068403908
 Adverse Impact Ratio (AIR): 0.9229947068403908
 ```
 **Interpretation:**  
@@ -252,28 +252,29 @@ Very near parity — no adverse impact detected for State of Origin.
 ![selection rate by marital status](/img/sel_rate_sor.png)
 
 > [!CAUTION]
-> Fairness is multi-dimensional. A pass on AIR does not mean the promotion process is perfectly fair — it means there is no statistical evidence (on audited attributes/content) of adverse impact by those attributes given available features and modeling choices.
+> Fairness is multi-dimensional. A pass on AIR does not mean the promotion process is perfectly fair — it means there is no statistical evidence (on audited attributes/content) of adverse impact by those attributes, given available features and modelling choices.
 
 ---
 
 ## Business interpretation
-This section explains how my results answer the business question “Is the promotion process biased? What should determine promotion?”  
+This section explains how my results answer the business question, “Is the promotion process biased? What should determine promotion?”  
 
 * Key merit signals strongly associated with promotion are training performance, targets met, prior awards, and recent performance scores. These are good candidates to form an objective promotion-scoring engine because they map to observable performance and skill measures.
 ```
-Business implication: Build a promotion eligibility score that weights these merit-based metrics heavily and transparently.
+Business implication: Build a promotion eligibility score that
+weights these merit-based metrics heavily and transparently.
 ```
-* Division and location have material influence on promotions. This may reflect real differences in promotion opportunities (some divisions have more roles, faster turnover, or clearer promotion pipelines), or it may reflect inconsistent application of criteria.
+* Division and location have a material influence on promotions. This may reflect real differences in promotion opportunities (some divisions have more roles, faster turnover, or clearer promotion pipelines), or it may reflect inconsistent application of criteria.
 ```
-Business implication: If promotions should be equally accessible across divisions, then division-adjusted thresholds, quotas,
-or normalized scoring may be needed.
+Business implication: If promotions should be equally accessible across divisions,
+then, division-adjusted thresholds, quotas, or normalised scoring may be needed.
 ```
 * Gender and marital status fairness audits do not indicate an adverse impact under standard metrics; BUT absolute counts and perceptions (e.g., more promoted males in counts) fuel complaints. Perception matters.
 ```
-Business implication: Communicate rates and normalized metrics (not just counts).
+Business implication: Communicate rates and normalised metrics (not just counts).
 Publish the promotion criteria and the score components.
 ```
-* Model performance trade-offs: If the manager choose a model like Gradient Boosting, they minimize false promotions (high precision) but miss candidates (low recall). If the manager's goal is to find every promotable candidate (high recall), they need a different approach or an intermediate two-stage process (screen broadly then apply higher-precision review).
+* Model performance trade-offs: If the manager chooses a model like Gradient Boosting, they minimise false promotions (high precision) but miss candidates (low recall). If the manager's goal is to find every promotable candidate (high recall), they need a different approach or an intermediate two-stage process (screen broadly, then apply higher-precision review).
 
 ---
 
@@ -281,29 +282,29 @@ Publish the promotion criteria and the score components.
 * Class imbalance is extreme (≈ 10.8:1). This affects model training and evaluation. Metrics must be interpreted with imbalance in mind.
 * Causality vs correlation: The models identify associations, not causal effects. For example, being in Commercial Sales may correlate with promotion because that division has more roles or different appraisal processes — not because the division itself "deserves" promotion.
 * Missing protected attributes: I could only audit fairness for attributes present in the data. If race/ethnicity, disability, religion, or other protected traits are relevant but not in the dataset, hidden bias may exist undetected.
-* Measurement quality: Training_score_average and Last_performance_score quality depends on consistent, objective scoring across divisions and raters. If scores are noisy or biased, the model will propagate that bias.
+* Measurement quality: Training_score_average and Last_performance_score quality depend on consistent, objective scoring across divisions and raters. If scores are noisy or biased, the model will propagate that bias.
 * Label issues: The “promotion” label reflects historical managerial decisions — if the historical process was biased, a model trained on that label can reproduce bias unless explicitly corrected.
 
 ---
 
 ## Recommendations
 * Publish a clear promotion framework that states the primary objective criteria and relative weighting (example: Training score 35%, Targets met 30%, Last performance 20%, Previous awards 10%, Qualifications 5%). Transparency reduces perception of bias.
-* Use rate-based reporting (not just counts) in internal communications: Report selection rates by protected group (gender, marital status, state of origin), division-normalized promotion rates, and promotion rates per 100 staff to illustrate fairness.
+* Use rate-based reporting (not just counts) in internal communications: Report selection rates by protected group (gender, marital status, state of origin), division-normalised promotion rates, and promotion rates per 100 staff to illustrate fairness.
 * Establish an "Appeals" & "Audit" process: Any denied candidate can request a review - an independent panel (cross-division) reviews borderline cases.
-* Two-stage selection pipeline is recommended:
+* A two-stage selection pipeline is recommended:
       - Stage 1 (recall-oriented): Use a higher-recall model (e.g., SVC/RF ensemble) or rule-based screener to assemble a longlist of promotable staff.
       - Stage 2 (precision + human review): Apply a high-precision model (Gradient Boosting) to create a shortlist, then have a calibrated human panel review. This balances finding promotable candidates and avoiding false promotions.
-* Normalize for division/role availability: When promotion slots are limited by division/structure, report promotions as rate per eligible population, and (where possible) create cross-division mobility programs.
-* Improve and standardize performance measurement (training scores, appraisal rubrics).
-* Quantitative KPI for promotions: Establish a promotion-dashboard for leadership with key metrics, trends, and outlier alerts.
+* Normalise for division/role availability: When promotion slots are limited by division/structure, report promotions as a rate per eligible population, and (where possible) create cross-division mobility programs.
+* Improve and standardise performance measurement (training scores, appraisal rubrics).
+* Quantitative KPI for promotions: Establish a promotion dashboard for leadership with key metrics, trends, and outlier alerts.
 * Collect richer demographic & contextual data (only as legally permitted) to enable broader fairness audits (age, disability, ethnicity). Ensure data privacy and legal compliance.
 * Create development pipelines: Make trainings and assignments available across divisions to reduce structural inequity. Track who gets development opportunities.  
 
 For a more technical audience...
 * Adopt the consensus feature set for any promotion scoring tool: i.e. training_score_average, targets_met, previous_award, last_performance_score, qualification_level. Use division only as an adjustment or tie-breaker (and never as a replacement for merit).
-* Bias mitigation: If future audits show disparities, apply reweighting or post-processing fairness techniques (e.g. equalized odds post-processing) rather than naive removal of features.
+* Bias mitigation: If future audits show disparities, apply reweighting or post-processing fairness techniques (e.g., equalised odds post-processing) rather than naive removal of features.
 * Model monitoring and periodic audits: Track selection rates, TPR, precision, recall, and fairness metrics monthly or quarterly. Keep model versioning and a log of decisions.
-* Human-in-the-loop: Never fully automate promotions. Use models to recommend and prioritize, not to decide. All final promotions should be reviewed by a calibrated, diverse panel.
+* Human-in-the-loop: Never fully automate promotions. Use models to recommend and prioritise, not to decide. All final promotions should be reviewed by a calibrated, diverse panel.
 * Calibration & thresholding: For score-based decisions, calibrate model output to reflect actual probabilities of promotion and set thresholds transparently. Consider different thresholds per division if promotion dynamics differ, but document the business logic clearly.
 
 ---
